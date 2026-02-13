@@ -19,6 +19,24 @@ async function requireAdmin(req: any): Promise<{ adminId: number; role: "super_a
   return { adminId: admin.id, role: admin.role };
 }
 
+async function upsertUser(claims: any) {
+  const user = await authStorage.upsertUser({
+    id: claims["sub"],
+    email: claims["email"],
+    firstName: claims["first_name"],
+    lastName: claims["last_name"],
+    profileImageUrl: claims["profile_image_url"],
+  });
+
+  // Automatically promote specified email to super_admin if not already an admin
+  if (user.email === "admin@blackai.in") {
+    const existingAdmin = await storage.getAdminByUserId(user.id);
+    if (!existingAdmin) {
+      await storage.createAdmin({ userId: user.id, role: "super_admin" });
+    }
+  }
+}
+
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   await setupAuth(app);
   registerAuthRoutes(app);

@@ -17,6 +17,7 @@ import AdminEventEditPage from "@/pages/admin/AdminEventEditPage";
 import SuperAdminAdminsPage from "@/pages/admin/SuperAdminAdminsPage";
 import { RouteTricolourLoader } from "@/components/RouteTricolourLoader";
 import { useRouteLoader } from "@/hooks/use-route-loader";
+import { I18nProvider } from "@/hooks/use-i18n";
 
 function Router() {
   const { isRouteLoading } = useRouteLoader();
@@ -51,8 +52,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <ShadToaster />
-        <Router />
+        <I18nProvider>
+          <ShadToaster />
+          <Router />
+        </I18nProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

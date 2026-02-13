@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, PropsWithChildren } from "react";
 
 export type Lang = "en" | "hi" | "mr";
 
@@ -50,7 +50,7 @@ const dict = {
   mr: {
     brand: "सिव्हिक इम्पॅक्ट स्टुडिओ",
     tagline: "प्रकल्प, कार्यक्रम आणि लोकहित कार्य — दर्जेदार मांडणी.",
-    nav: { home: "मुख्य", projects: "प्रकल्प", events: "कार्यक्रम", admin: "अ‍ॅडमिन" },
+    nav: { home: "मुख्य", प्रकल्प: "प्रकल्प", events: "कार्यक्रम", admin: "अ‍ॅडमिन" },
     actions: { login: "अ‍ॅडमिन लॉगिन", logout: "लॉगआउट", open: "उघडा", viewAll: "सर्व पहा", create: "तयार करा", update: "अपडेट" },
     labels: {
       featuredProjects: "वैशिष्ट्यपूर्ण प्रकल्प",
@@ -70,7 +70,15 @@ const dict = {
   },
 } as const;
 
-export function useI18n() {
+interface I18nContextType {
+  lang: Lang;
+  setLang: (lang: Lang) => void;
+  t: typeof dict.en;
+}
+
+const I18nContext = createContext<I18nContextType | null>(null);
+
+export function I18nProvider({ children }: PropsWithChildren) {
   const [lang, setLang] = useState<Lang>("en");
 
   useEffect(() => {
@@ -85,5 +93,15 @@ export function useI18n() {
 
   const t = useMemo(() => dict[lang], [lang]);
 
-  return { lang, setLang, t };
+  return (
+    <I18nContext.Provider value={{ lang, setLang, t }}>
+      {children}
+    </I18nContext.Provider>
+  );
+}
+
+export function useI18n() {
+  const context = useContext(I18nContext);
+  if (!context) throw new Error("useI18n must be used within I18nProvider");
+  return context;
 }

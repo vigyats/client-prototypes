@@ -27,100 +27,70 @@ export default function HomePage() {
   return (
     <Shell>
       <div className="animate-fadeUp">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_.9fr] gap-6 lg:gap-8 items-start">
-          <div className="rounded-[28px] border bg-card/70 shadow-[var(--shadow-lg)] backdrop-blur overflow-hidden">
-            <div className="p-6 md:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_.9fr] gap-6 lg:gap-8 items-stretch">
+          <div className="rounded-[28px] border bg-card/70 shadow-[var(--shadow-lg)] backdrop-blur overflow-hidden flex flex-col justify-center">
+            <div className="p-6 md:p-10">
               <div className="inline-flex items-center gap-2 rounded-2xl border bg-background px-3 py-2 text-xs font-semibold text-foreground/80">
                 <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-saffron))]" />
                 <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-navy))]" />
                 <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-green))]" />
-                National palette • subtle accents
+                Civic Stewardship
               </div>
 
-              <h1 className="mt-4 text-3xl md:text-5xl font-bold leading-[1.05]">
-                Public work, presented with{" "}
-                <span className="bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-primary to-[hsl(var(--tri-green))] bg-clip-text text-transparent">
-                  clarity
-                </span>
-                .
+              <h1 className="mt-4 text-4xl md:text-6xl font-bold leading-[1.05]">
+                Effort is a <span className="text-[hsl(var(--tri-saffron))]">thought.</span>
               </h1>
 
-              <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-prose">
-                Explore featured initiatives, deep-dive into project documentation, and revisit past events — in English, हिन्दी, and मराठी.
+              <p className="mt-4 text-lg md:text-xl text-muted-foreground font-medium max-w-prose">
+                To do something selflessly for society.
               </p>
 
-              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/projects"
                   className={cn(
-                    "inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold",
+                    "inline-flex items-center justify-center rounded-2xl h-14 px-8 text-base font-bold",
                     "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground",
                     "shadow-[0_18px_42px_hsl(var(--primary)/0.22)] hover:shadow-[0_22px_55px_hsl(var(--primary)/0.28)]",
                     "hover:-translate-y-[1px] active:translate-y-0 transition-all",
                   )}
                 >
-                  <FolderKanban className="mr-2 h-4 w-4" />
+                  <FolderKanban className="mr-2 h-5 w-5" />
                   {t.nav.projects}
-                  <ArrowUpRight className="ml-2 h-4 w-4" />
+                  <ArrowUpRight className="ml-2 h-5 w-5" />
                 </Link>
 
                 <Link
                   href="/events"
                   className={cn(
-                    "inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold",
-                    "border bg-background hover:bg-muted/70 hover:shadow-[var(--shadow-md)] transition-all",
+                    "inline-flex items-center justify-center rounded-2xl h-14 px-8 text-base font-bold",
+                    "border-2 bg-background hover:bg-muted/70 hover:shadow-[var(--shadow-md)] transition-all",
                   )}
                 >
-                  <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <CalendarDays className="mr-2 h-5 w-5 text-muted-foreground" />
                   {t.nav.events}
-                  <ArrowUpRight className="ml-2 h-4 w-4" />
                 </Link>
-              </div>
-
-              <div className="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {[
-                  { k: "Featured", v: `${featuredItems.length}/4` },
-                  { k: "All projects", v: `${Math.max((allProjects.data || []).length, 0)}` },
-                  { k: "More", v: `${Math.max(nonFeaturedCount, 0)}` },
-                ].map((s) => (
-                  <div key={s.k} className="rounded-2xl border bg-background p-4 shadow-[var(--shadow-sm)]">
-                    <div className="text-xs text-muted-foreground">{s.k}</div>
-                    <div className="mt-1 text-lg font-bold">{s.v}</div>
-                  </div>
-                ))}
               </div>
             </div>
             <div className="h-2 bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-white to-[hsl(var(--tri-green))]" />
           </div>
 
-          <div className="rounded-[28px] border bg-card/70 shadow-[var(--shadow-lg)] backdrop-blur overflow-hidden">
-            <div className="p-6 md:p-8">
-              <div className="text-xs font-semibold text-muted-foreground">Reading mode</div>
-              <div className="mt-2 text-lg font-bold">Language-aware content</div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                We request translated content from the server using <span className="font-semibold text-foreground/85">?lang={lang}</span>. If a translation is missing, we fall back to English in the UI.
-              </p>
-
-              <div className="mt-6 rounded-2xl border bg-background p-4">
-                <div className="text-xs text-muted-foreground">Current language</div>
-                <div className="mt-1 text-2xl font-bold tracking-tight">{lang.toUpperCase()}</div>
-                <div className="mt-3 h-2 rounded-full overflow-hidden border bg-muted">
-                  <div className="h-full w-full bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-[hsl(var(--tri-navy))] to-[hsl(var(--tri-green))]" />
+          <div className="relative rounded-[28px] border shadow-[var(--shadow-lg)] overflow-hidden min-h-[300px] lg:min-h-full">
+            <img 
+              src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=2560" 
+              alt="Nature background"
+              className="absolute inset-0 w-full h-full object-cover opacity-60"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80 lg:bg-gradient-to-r lg:to-background/40" />
+            <div className="relative h-full p-8 flex flex-col justify-end lg:justify-center">
+              <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md p-6 max-w-md">
+                <div className="text-xs font-bold uppercase tracking-widest text-white/70">Our Vision</div>
+                <div className="mt-2 text-xl font-bold text-white">Sustainable growth through selfless community action.</div>
+                <div className="mt-4 flex gap-2">
+                  <div className="h-1 w-8 rounded-full bg-[hsl(var(--tri-saffron))]" />
+                  <div className="h-1 w-8 rounded-full bg-white" />
+                  <div className="h-1 w-8 rounded-full bg-[hsl(var(--tri-green))]" />
                 </div>
-              </div>
-            </div>
-            <div className="p-6 md:p-8 pt-0">
-              <div className="rounded-2xl border bg-muted/40 p-4">
-                <div className="text-sm font-semibold">Admin publishing</div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Admins can create projects/events, upload covers, and write rich content with headings, lists, links and more.
-                </p>
-                <Link
-                  href="/admin"
-                  className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
-                >
-                  Go to Admin <ArrowUpRight className="h-4 w-4" />
-                </Link>
               </div>
             </div>
           </div>

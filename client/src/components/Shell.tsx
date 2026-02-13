@@ -46,7 +46,7 @@ function TopNav() {
       <div className="bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4 flag-border">
           <Brand />
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2">
             {nav.map((n) => {
               const active = loc === n.href;
               return (
@@ -68,8 +68,7 @@ function TopNav() {
                 href="/admin"
                 className={cn(
                   "ml-1 px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200",
-                  "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-[0_14px_30px_hsl(var(--primary)/0.22)]",
-                  "hover:shadow-[0_18px_42px_hsl(var(--primary)/0.26)] hover:-translate-y-[1px] active:translate-y-0",
+                  "border bg-card/50 hover:bg-card hover:shadow-[var(--shadow-sm)]",
                 )}
               >
                 {t.nav.admin}
