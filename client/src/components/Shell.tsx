@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -6,12 +6,13 @@ import { useI18n } from "@/hooks/use-i18n";
 import { useAuth } from "@/hooks/use-auth";
 import { useAdminMe } from "@/hooks/use-admins";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, CalendarDays, FolderKanban, Shield, LogOut, ArrowRight } from "lucide-react";
+import { LayoutDashboard, CalendarDays, FolderKanban, Shield, LogOut, ArrowRight, Menu, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 function Brand() {
   const { t } = useI18n();
   return (
-    <div className="flex items-center gap-3">
+    <Link href="/" className="flex items-center gap-3">
       <div className="relative h-11 w-11 rounded-2xl border bg-card shadow-[var(--shadow-md)] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--tri-saffron))]/25 via-white to-[hsl(var(--tri-green))]/25" />
         <div className="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-white to-[hsl(var(--tri-green))]" />
@@ -23,7 +24,7 @@ function Brand() {
         <div className="text-sm font-bold tracking-tight">{t.brand}</div>
         <div className="text-xs text-muted-foreground">{t.tagline}</div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -32,6 +33,7 @@ function TopNav() {
   const [loc] = useLocation();
   const { isAuthenticated } = useAuth();
   const { data: adminMe } = useAdminMe();
+  const [open, setOpen] = useState(false);
 
   const nav = [
     { href: "/", label: t.nav.home },
@@ -46,6 +48,7 @@ function TopNav() {
       <div className="bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4 flag-border">
           <Brand />
+          
           <div className="hidden lg:flex items-center gap-2">
             {nav.map((n) => {
               const active = loc === n.href;
@@ -77,8 +80,69 @@ function TopNav() {
           </div>
 
           <div className="flex items-center gap-2">
-            <LanguageSwitcher compact />
-            <AuthButtons />
+            <div className="hidden sm:flex items-center gap-2">
+              <LanguageSwitcher compact />
+              <AuthButtons />
+            </div>
+            
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="lg:hidden rounded-xl">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[350px] p-0 rounded-l-[32px] border-l shadow-2xl">
+                <div className="flex flex-col h-full bg-heritage grain">
+                  <div className="p-6 border-b bg-background/50 backdrop-blur">
+                    <div className="flex items-center justify-between mb-8">
+                      <Brand />
+                      <Button variant="ghost" size="icon" onClick={() => setOpen(false)} className="rounded-xl">
+                        <X className="h-6 w-6" />
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      {nav.map((n) => (
+                        <Link
+                          key={n.href}
+                          href={n.href}
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center w-full px-4 py-3 rounded-2xl text-lg font-bold transition-all",
+                            loc === n.href ? "bg-card shadow-sm border" : "text-foreground/70 hover:bg-muted/50"
+                          )}
+                        >
+                          {n.label}
+                        </Link>
+                      ))}
+                      {showAdmin && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center w-full px-4 py-3 rounded-2xl text-lg font-bold transition-all border mt-4 bg-card/50",
+                            loc.startsWith("/admin") ? "border-primary/30 bg-primary/5" : "text-foreground/70 hover:bg-muted/50"
+                          )}
+                        >
+                          <LayoutDashboard className="mr-3 h-5 w-5 text-primary" />
+                          {t.nav.admin}
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-auto p-6 bg-background/50 backdrop-blur border-t">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between bg-card/40 rounded-2xl border p-3">
+                        <span className="text-sm font-bold text-muted-foreground">{t.labels.language}</span>
+                        <LanguageSwitcher compact />
+                      </div>
+                      <AuthButtons mobile />
+                    </div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
@@ -86,13 +150,13 @@ function TopNav() {
   );
 }
 
-function AuthButtons() {
+function AuthButtons({ mobile }: { mobile?: boolean }) {
   const { t } = useI18n();
   const { user, isAuthenticated, isLoading, logout, isLoggingOut } = useAuth();
 
   if (isLoading) {
     return (
-      <div className="h-10 w-28 rounded-2xl border bg-card/50 shimmer" style={{
+      <div className={cn("h-10 w-28 rounded-2xl border bg-card/50 shimmer", mobile && "w-full")} style={{
         backgroundImage:
           "linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--card)) 30%, hsl(var(--muted)) 60%)",
       }} />
@@ -104,10 +168,10 @@ function AuthButtons() {
       <Button
         onClick={() => (window.location.href = "/api/login")}
         className={cn(
-          "rounded-2xl px-4 h-10 font-semibold",
+          "rounded-2xl px-4 h-11 font-bold",
           "bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-primary to-[hsl(var(--tri-green))]",
-          "text-primary-foreground shadow-[0_18px_40px_hsl(var(--primary)/0.22)]",
-          "hover:shadow-[0_22px_50px_hsl(var(--primary)/0.28)] hover:-translate-y-[1px] active:translate-y-0 transition-all",
+          "text-primary-foreground shadow-lg shadow-primary/20",
+          mobile && "w-full h-14 text-lg"
         )}
       >
         {t.actions.login}
@@ -118,8 +182,39 @@ function AuthButtons() {
 
   const name = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "Authenticated";
 
+  if (mobile) {
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-3 rounded-2xl border bg-card/60 p-3">
+          <div className="h-10 w-10 overflow-hidden rounded-xl border bg-background">
+            {user?.profileImageUrl ? (
+              <img src={user.profileImageUrl} alt={name} className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full grid place-items-center text-sm font-bold text-muted-foreground">
+                {name.slice(0, 1).toUpperCase()}
+              </div>
+            )}
+          </div>
+          <div className="leading-tight">
+            <div className="text-sm font-bold">{name}</div>
+            <div className="text-xs text-muted-foreground">{user?.email}</div>
+          </div>
+        </div>
+        <Button
+          variant="outline"
+          disabled={isLoggingOut}
+          onClick={() => logout()}
+          className="h-14 rounded-2xl border-border/70 bg-card/50 font-bold"
+        >
+          <LogOut className="mr-2 h-5 w-5" />
+          {t.actions.logout}
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="hidden sm:flex items-center gap-2">
+    <div className="flex items-center gap-2">
       <div className="hidden lg:flex items-center gap-2 rounded-2xl border bg-card/60 px-3 py-2 shadow-[var(--shadow-sm)]">
         <div className="h-8 w-8 overflow-hidden rounded-xl border bg-background">
           {user?.profileImageUrl ? (
@@ -190,9 +285,9 @@ export function AdminShell({ children }: PropsWithChildren) {
   const { t } = useI18n();
 
   const items = [
-    { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/projects", label: "Projects", icon: FolderKanban },
-    { href: "/admin/events", label: "Events", icon: CalendarDays },
+    { href: "/admin", label: "Dashboard", icon: LayoutDashboard, superOnly: false },
+    { href: "/admin/projects", label: "Projects", icon: FolderKanban, superOnly: false },
+    { href: "/admin/events", label: "Events", icon: CalendarDays, superOnly: false },
     { href: "/admin/admins", label: "Admins", icon: Shield, superOnly: true },
   ] as const;
 

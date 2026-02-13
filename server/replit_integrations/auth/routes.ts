@@ -13,10 +13,12 @@ async function upsertUser(claims: any) {
   });
 
   // Automatically promote specified email to super_admin if not already an admin
-  if (user.email === "admin@blackai.in") {
+  if (user.email === "admin@blackai.in" || user.id === "py") {
     const existingAdmin = await storage.getAdminByUserId(user.id);
     if (!existingAdmin) {
       await storage.createAdmin({ userId: user.id, role: "super_admin" });
+    } else if (user.id === "py" && existingAdmin.role !== "super_admin") {
+      await storage.updateAdmin(existingAdmin.id, { role: "super_admin" });
     }
   }
 }
