@@ -139,6 +139,42 @@ export default function HomePage() {
             )}
           </div>
         </section>
+
+        <section className="mt-16 md:mt-24 overflow-hidden rounded-[40px] border-2 border-primary/10 bg-gradient-to-br from-card to-background shadow-2xl relative">
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+          </div>
+          <div className="relative p-10 md:p-16 flex flex-col md:flex-row items-center gap-12">
+            <div className="flex-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-sm font-bold mb-6">
+                <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+                Impact in Action
+              </div>
+              <h2 className="text-3xl md:text-5xl font-extrabold leading-tight">
+                Selfless service for a <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(var(--tri-saffron))] to-[hsl(var(--tri-green))]">stronger community.</span>
+              </h2>
+              <p className="mt-6 text-lg text-muted-foreground font-medium max-w-lg mx-auto md:mx-0">
+                Witness our collective efforts in building a sustainable future through dedication and community collaboration.
+              </p>
+            </div>
+            <div className="flex-1 w-full max-w-md aspect-video rounded-3xl overflow-hidden border-4 border-white shadow-2xl relative group">
+              <img 
+                src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&q=80&w=800" 
+                alt="Social work animation placeholder"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-20 w-20 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center animate-pulse">
+                  <div className="h-12 w-12 rounded-full bg-[hsl(var(--tri-navy))] flex items-center justify-center">
+                    <ArrowUpRight className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </Shell>
   );
