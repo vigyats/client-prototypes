@@ -34,6 +34,9 @@ const eventTranslationInput = z.object({
   status: z.enum(["draft", "published"]).optional(),
   title: z.string().min(1),
   location: z.string().nullable().optional(),
+  summary: z.string().nullable().optional(),
+  introduction: z.string().nullable().optional(),
+  requirements: z.string().nullable().optional(),
   contentHtml: z.string().min(1),
 });
 
@@ -101,7 +104,9 @@ export const api = {
       method: "POST" as const,
       path: "/api/admins" as const,
       input: z.object({
-        userId: z.string().min(1),
+        username: z.string().min(1),
+        email: z.string().email(),
+        password: z.string().min(6),
         role: z.enum(["super_admin", "admin"]).default("admin"),
       }),
       responses: {
@@ -174,6 +179,7 @@ export const api = {
         slug: z.string().min(1),
         isFeatured: z.boolean().optional(),
         coverImagePath: z.string().nullable().optional(),
+        youtubeUrl: z.string().nullable().optional(),
         translations: z.array(projectTranslationInput).min(1),
       }),
       responses: {
@@ -190,6 +196,7 @@ export const api = {
         slug: z.string().min(1).optional(),
         isFeatured: z.boolean().optional(),
         coverImagePath: z.string().nullable().optional(),
+        youtubeUrl: z.string().nullable().optional(),
       }),
       responses: {
         200: z.object({ project: z.any(), translations: z.array(z.any()) }),
@@ -242,7 +249,13 @@ export const api = {
         slug: z.string().min(1),
         startDate: z.string().nullable().optional(),
         endDate: z.string().nullable().optional(),
+        registrationStartDate: z.string().nullable().optional(),
+        registrationEndDate: z.string().nullable().optional(),
         coverImagePath: z.string().nullable().optional(),
+        flyerImagePath: z.string().nullable().optional(),
+        registrationFormUrl: z.string().nullable().optional(),
+        eventPrice: z.string().nullable().optional(),
+        participationType: z.string().nullable().optional(),
         translations: z.array(eventTranslationInput).min(1),
       }),
       responses: {
@@ -259,7 +272,13 @@ export const api = {
         slug: z.string().optional(),
         startDate: z.string().nullable().optional(),
         endDate: z.string().nullable().optional(),
+        registrationStartDate: z.string().nullable().optional(),
+        registrationEndDate: z.string().nullable().optional(),
         coverImagePath: z.string().nullable().optional(),
+        flyerImagePath: z.string().nullable().optional(),
+        registrationFormUrl: z.string().nullable().optional(),
+        eventPrice: z.string().nullable().optional(),
+        participationType: z.string().nullable().optional(),
       }),
       responses: {
         200: z.object({ event: z.any(), translations: z.array(z.any()) }),

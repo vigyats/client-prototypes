@@ -9,12 +9,15 @@ import ProjectsPage from "@/pages/ProjectsPage";
 import ProjectDetailPage from "@/pages/ProjectDetailPage";
 import EventsPage from "@/pages/EventsPage";
 import EventDetailPage from "@/pages/EventDetailPage";
+import AboutPage from "@/pages/AboutPage";
+import DonatePage from "@/pages/DonatePage";
 import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
 import AdminProjectsPage from "@/pages/admin/AdminProjectsPage";
 import AdminProjectEditPage from "@/pages/admin/AdminProjectEditPage";
 import AdminEventsPage from "@/pages/admin/AdminEventsPage";
 import AdminEventEditPage from "@/pages/admin/AdminEventEditPage";
 import SuperAdminAdminsPage from "@/pages/admin/SuperAdminAdminsPage";
+import AdminLoginPage from "@/pages/admin/AdminLoginPage";
 import { RouteTricolourLoader } from "@/components/RouteTricolourLoader";
 import { useRouteLoader } from "@/hooks/use-route-loader";
 import { I18nProvider } from "@/hooks/use-i18n";
@@ -32,8 +35,11 @@ function Router() {
         <Route path="/projects/:id" component={ProjectDetailPage} />
         <Route path="/events" component={EventsPage} />
         <Route path="/events/:id" component={EventDetailPage} />
+        <Route path="/about" component={AboutPage} />
+        <Route path="/donate" component={DonatePage} />
 
         {/* Admin */}
+        <Route path="/admin/login" component={AdminLoginPage} />
         <Route path="/admin" component={AdminDashboardPage} />
         <Route path="/admin/projects" component={AdminProjectsPage} />
         <Route path="/admin/projects/:id" component={AdminProjectEditPage} />

@@ -10,6 +10,7 @@ import { TranslationTabs } from "@/components/TranslationTabs";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Save } from "lucide-react";
 
 type TrForm = {
@@ -17,6 +18,9 @@ type TrForm = {
   status: "draft" | "published";
   title: string;
   location: string;
+  summary: string;
+  introduction: string;
+  requirements: string;
   contentHtml: string;
 };
 
@@ -39,13 +43,19 @@ export default function AdminEventEditPage() {
   const [slug, setSlug] = useState("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  const [registrationStartDate, setRegistrationStartDate] = useState<string>("");
+  const [registrationEndDate, setRegistrationEndDate] = useState<string>("");
   const [cover, setCover] = useState<string | null>(null);
+  const [flyer, setFlyer] = useState<string | null>(null);
+  const [registrationFormUrl, setRegistrationFormUrl] = useState("");
+  const [eventPrice, setEventPrice] = useState("");
+  const [participationType, setParticipationType] = useState("");
 
   const [activeLang, setActiveLang] = useState<Lang>("en");
   const [forms, setForms] = useState<Record<Lang, TrForm>>({
-    en: { language: "en", status: "draft", title: "", location: "", contentHtml: "" },
-    hi: { language: "hi", status: "draft", title: "", location: "", contentHtml: "" },
-    mr: { language: "mr", status: "draft", title: "", location: "", contentHtml: "" },
+    en: { language: "en", status: "draft", title: "", location: "", summary: "", introduction: "", requirements: "", contentHtml: "" },
+    hi: { language: "hi", status: "draft", title: "", location: "", summary: "", introduction: "", requirements: "", contentHtml: "" },
+    mr: { language: "mr", status: "draft", title: "", location: "", summary: "", introduction: "", requirements: "", contentHtml: "" },
   });
 
   useEffect(() => {
@@ -53,9 +63,15 @@ export default function AdminEventEditPage() {
     if (!data?.event) return;
     setSlug(data.event.slug || "");
     setCover(data.event.coverImagePath ?? null);
+    setFlyer(data.event.flyerImagePath ?? null);
+    setRegistrationFormUrl(data.event.registrationFormUrl || "");
+    setEventPrice(data.event.eventPrice || "");
+    setParticipationType(data.event.participationType || "");
 
     setStartDate(data.event.startDate ? new Date(data.event.startDate as any).toISOString().slice(0, 16) : "");
     setEndDate(data.event.endDate ? new Date(data.event.endDate as any).toISOString().slice(0, 16) : "");
+    setRegistrationStartDate(data.event.registrationStartDate ? new Date(data.event.registrationStartDate as any).toISOString().slice(0, 16) : "");
+    setRegistrationEndDate(data.event.registrationEndDate ? new Date(data.event.registrationEndDate as any).toISOString().slice(0, 16) : "");
 
     const trs = data.translations || [];
     (["en", "hi", "mr"] as Lang[]).forEach((l) => {
@@ -68,12 +84,14 @@ export default function AdminEventEditPage() {
             status: ex.status || "draft",
             title: ex.title || "",
             location: ex.location || "",
+            summary: ex.summary || "",
+            introduction: ex.introduction || "",
+            requirements: ex.requirements || "",
             contentHtml: ex.contentHtml || "",
           },
         }));
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q.data]);
 
   async function saveBasics() {
@@ -88,7 +106,13 @@ export default function AdminEventEditPage() {
           slug: slug.trim(),
           startDate: startDate ? new Date(startDate).toISOString() : null,
           endDate: endDate ? new Date(endDate).toISOString() : null,
+          registrationStartDate: registrationStartDate ? new Date(registrationStartDate).toISOString() : null,
+          registrationEndDate: registrationEndDate ? new Date(registrationEndDate).toISOString() : null,
           coverImagePath: cover,
+          flyerImagePath: flyer,
+          registrationFormUrl: registrationFormUrl.trim() || null,
+          eventPrice: eventPrice.trim() || null,
+          participationType: participationType.trim() || null,
         },
       });
       toast({ title: "Saved", description: "Event basics updated.", variant: "default" });
@@ -99,8 +123,8 @@ export default function AdminEventEditPage() {
 
   async function saveTranslation(l: Lang) {
     const f = forms[l];
-    if (!f.title.trim() || !f.contentHtml.trim()) {
-      toast({ title: "Title + content required", description: "Please add title and content.", variant: "destructive" });
+    if (!f.title.trim()) {
+      toast({ title: "Title required", description: "Please add title.", variant: "destructive" });
       return;
     }
     try {
@@ -111,8 +135,11 @@ export default function AdminEventEditPage() {
           language: l,
           status: f.status,
           title: f.title.trim(),
-          location: f.location.trim() ? f.location.trim() : null,
-          contentHtml: f.contentHtml,
+          location: f.location.trim() || null,
+          summary: f.summary.trim() || null,
+          introduction: f.introduction.trim() || null,
+          requirements: f.requirements.trim() || null,
+          contentHtml: f.contentHtml || "",
         },
       });
       toast({ title: "Saved", description: `Translation ${l.toUpperCase()} updated.`, variant: "default" });
@@ -124,8 +151,8 @@ export default function AdminEventEditPage() {
   return (
     <AdminGuard>
       <AdminShell>
-        <div className="animate-fadeUp">
-          <div className="flex items-center justify-between gap-4">
+        <div className="animate-fadeUp pb-8">
+          <div className="flex items-center justify-between gap-4 mb-6">
             <Link href="/admin/events" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
               <ArrowLeft className="h-4 w-4" />
               Back to events
@@ -136,74 +163,77 @@ export default function AdminEventEditPage() {
           </div>
 
           {q.isLoading ? (
-            <div className="mt-6 rounded-3xl border bg-card/50 p-6 shimmer" style={{ backgroundImage: "linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--card)) 30%, hsl(var(--muted)) 60%)" }} />
+            <div className="rounded-lg border bg-muted/50 p-6 animate-pulse" />
           ) : q.isError ? (
-            <div className="mt-6 rounded-3xl border bg-card p-6 shadow-[var(--shadow-md)]">
+            <div className="rounded-lg border bg-card p-6">
               <div className="text-sm font-bold">Could not load event</div>
               <div className="mt-1 text-sm text-muted-foreground">{(q.error as Error).message}</div>
             </div>
           ) : !(q.data as any)?.event ? (
-            <div className="mt-6 rounded-3xl border bg-card p-8 shadow-[var(--shadow-md)]">
+            <div className="rounded-lg border bg-card p-8">
               <div className="text-lg font-bold">Not found</div>
               <div className="mt-2 text-sm text-muted-foreground">Event does not exist.</div>
             </div>
           ) : (
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-6">
-                <div className="rounded-[28px] border bg-card/70 shadow-[var(--shadow-lg)] backdrop-blur overflow-hidden">
-                  <div className="p-5 md:p-6 border-b bg-background/60 flex items-start justify-between gap-4">
+                <div className="rounded-lg border bg-card shadow-lg overflow-hidden">
+                  <div className="p-5 border-b flex items-start justify-between gap-4">
                     <div>
                       <div className="text-xs font-semibold text-muted-foreground">Event</div>
-                      <div className="mt-1 text-2xl font-bold tracking-tight">Basics</div>
-                      <div className="mt-1 text-sm text-muted-foreground">
-                        Update slug, date range, and cover image.
-                      </div>
+                      <div className="mt-1 text-2xl font-bold">Basics</div>
                     </div>
-
-                    <Button
-                      onClick={() => void saveBasics()}
-                      disabled={upd.isPending}
-                      className="rounded-2xl h-11 px-4 font-semibold bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-[0_18px_42px_hsl(var(--primary)/0.22)] hover:shadow-[0_22px_55px_hsl(var(--primary)/0.28)] hover:-translate-y-[1px] active:translate-y-0 transition-all"
-                    >
+                    <Button onClick={() => void saveBasics()} disabled={upd.isPending} variant="outline" className="flex-shrink-0">
                       <Save className="mr-2 h-4 w-4" />
                       {upd.isPending ? "Saving…" : "Save"}
                     </Button>
                   </div>
 
-                  <div className="p-5 md:p-6 space-y-4">
+                  <div className="p-5 space-y-5">
                     <div>
-                      <div className="text-xs font-semibold text-muted-foreground">Slug</div>
-                      <Input
-                        value={slug}
-                        onChange={(e) => setSlug(e.target.value)}
-                        className="mt-1 h-12 rounded-2xl border-border/70 bg-background/70 focus:ring-4 focus:ring-ring/20 transition-all"
-                      />
+                      <label className="text-sm font-medium block mb-2">Slug *</label>
+                      <Input value={slug} onChange={(e) => setSlug(e.target.value)} />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-sm font-medium block mb-2">Event Price (₹)</label>
+                      <Input value={eventPrice} onChange={(e) => setEventPrice(e.target.value)} placeholder="Free, 500, 1000" />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium block mb-2">Participation Type</label>
+                      <Input value={participationType} onChange={(e) => setParticipationType(e.target.value)} placeholder="Team, Individual, Both" />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium block mb-2">Registration Form URL</label>
+                      <Input value={registrationFormUrl} onChange={(e) => setRegistrationFormUrl(e.target.value)} placeholder="https://forms.google.com/..." />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <div className="text-xs font-semibold text-muted-foreground">Start date</div>
-                        <Input
-                          type="datetime-local"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                          className="mt-1 h-12 rounded-2xl border-border/70 bg-background/70 focus:ring-4 focus:ring-ring/20 transition-all"
-                        />
+                        <label className="text-sm font-medium block mb-2">Registration Start</label>
+                        <Input type="datetime-local" value={registrationStartDate} onChange={(e) => setRegistrationStartDate(e.target.value)} />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold text-muted-foreground">End date</div>
-                        <Input
-                          type="datetime-local"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
-                          className="mt-1 h-12 rounded-2xl border-border/70 bg-background/70 focus:ring-4 focus:ring-ring/20 transition-all"
-                        />
+                        <label className="text-sm font-medium block mb-2">Registration End</label>
+                        <Input type="datetime-local" value={registrationEndDate} onChange={(e) => setRegistrationEndDate(e.target.value)} />
                       </div>
                     </div>
-                  </div>
 
-                  <div className="p-5 md:p-6 pt-0">
-                    <CoverImageField value={cover} onChange={setCover} label="Cover image" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-sm font-medium block mb-2">Event Start</label>
+                        <Input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium block mb-2">Event End</label>
+                        <Input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                      </div>
+                    </div>
+
+                    <CoverImageField value={flyer} onChange={setFlyer} label="Event Flyer" />
+                    <CoverImageField value={cover} onChange={setCover} label="Cover Image" />
                   </div>
                 </div>
               </div>
@@ -213,47 +243,37 @@ export default function AdminEventEditPage() {
                   activeLang={activeLang}
                   onChangeLang={setActiveLang}
                   headerRight={
-                    <Button
-                      onClick={() => void saveTranslation(activeLang)}
-                      disabled={upsertTr.isPending}
-                      className="rounded-2xl h-11 px-4 font-semibold bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-primary to-[hsl(var(--tri-green))] text-primary-foreground shadow-[0_18px_42px_hsl(var(--primary)/0.22)] hover:shadow-[0_22px_55px_hsl(var(--primary)/0.28)] hover:-translate-y-[1px] active:translate-y-0 transition-all"
-                    >
+                    <Button onClick={() => void saveTranslation(activeLang)} disabled={upsertTr.isPending} variant="outline" className="flex-shrink-0">
                       <Save className="mr-2 h-4 w-4" />
-                      {upsertTr.isPending ? "Saving…" : "Save translation"}
+                      {upsertTr.isPending ? "Saving…" : "Save"}
                     </Button>
                   }
                   render={(l) => (
-                    <div className="space-y-4">
-                      <div className="rounded-3xl border bg-card shadow-[var(--shadow-md)] p-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-5">
+                      <div className="rounded-lg border bg-card p-5 space-y-5">
+                        <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <div className="text-xs font-semibold text-muted-foreground">Title</div>
-                            <Input
-                              value={forms[l].title}
-                              onChange={(e) => setForms((p) => ({ ...p, [l]: { ...p[l], title: e.target.value } }))}
-                              className="mt-1 h-12 rounded-2xl border-border/70 bg-background/70 focus:ring-4 focus:ring-ring/20 transition-all"
-                            />
+                            <label className="text-sm font-medium block mb-2">Title *</label>
+                            <Input value={forms[l].title} onChange={(e) => setForms((p) => ({ ...p, [l]: { ...p[l], title: e.target.value } }))} />
                           </div>
                           <div>
-                            <div className="text-xs font-semibold text-muted-foreground">Status</div>
-                            <div className="mt-1 flex items-center gap-2">
+                            <label className="text-sm font-medium block mb-2">Status</label>
+                            <div className="flex gap-2">
                               <Button
                                 type="button"
-                                variant="outline"
+                                variant={forms[l].status === "draft" ? "default" : "outline"}
                                 onClick={() => setForms((p) => ({ ...p, [l]: { ...p[l], status: "draft" } }))}
-                                className={cn("h-12 rounded-2xl border-border/70 bg-background/70 hover:bg-muted/70 transition-all flex-1",
-                                  forms[l].status === "draft" ? "border-primary/35 bg-primary/5" : ""
-                                )}
+                                className="flex-1 h-9"
+                                size="sm"
                               >
                                 Draft
                               </Button>
                               <Button
                                 type="button"
-                                variant="outline"
+                                variant={forms[l].status === "published" ? "default" : "outline"}
                                 onClick={() => setForms((p) => ({ ...p, [l]: { ...p[l], status: "published" } }))}
-                                className={cn("h-12 rounded-2xl border-border/70 bg-background/70 hover:bg-muted/70 transition-all flex-1",
-                                  forms[l].status === "published" ? "border-primary/35 bg-primary/5" : ""
-                                )}
+                                className="flex-1 h-9"
+                                size="sm"
                               >
                                 Published
                               </Button>
@@ -261,38 +281,36 @@ export default function AdminEventEditPage() {
                           </div>
                         </div>
 
-                        <div className="mt-3">
-                          <div className="text-xs font-semibold text-muted-foreground">Location (optional)</div>
-                          <Input
-                            value={forms[l].location}
-                            onChange={(e) => setForms((p) => ({ ...p, [l]: { ...p[l], location: e.target.value } }))}
-                            className="mt-1 h-12 rounded-2xl border-border/70 bg-background/70 focus:ring-4 focus:ring-ring/20 transition-all"
-                          />
+                        <div>
+                          <label className="text-sm font-medium block mb-2">Location</label>
+                          <Input value={forms[l].location} onChange={(e) => setForms((p) => ({ ...p, [l]: { ...p[l], location: e.target.value } }))} />
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium block mb-2">Summary</label>
+                          <Textarea value={forms[l].summary} onChange={(e) => setForms((p) => ({ ...p, [l]: { ...p[l], summary: e.target.value } }))} rows={2} />
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium block mb-2">Introduction</label>
+                          <Textarea value={forms[l].introduction} onChange={(e) => setForms((p) => ({ ...p, [l]: { ...p[l], introduction: e.target.value } }))} rows={3} />
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium block mb-2">Requirements</label>
+                          <Textarea value={forms[l].requirements} onChange={(e) => setForms((p) => ({ ...p, [l]: { ...p[l], requirements: e.target.value } }))} rows={3} />
                         </div>
                       </div>
 
-                      <RichTextEditor
-                        value={forms[l].contentHtml}
-                        onChange={(html) => setForms((p) => ({ ...p, [l]: { ...p[l], contentHtml: html } }))}
-                      />
-
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Button
-                          onClick={() => void saveTranslation(l)}
-                          disabled={upsertTr.isPending}
-                          className="rounded-2xl h-11 px-4 font-semibold bg-gradient-to-r from-primary to-primary/85 text-primary-foreground shadow-[0_18px_42px_hsl(var(--primary)/0.20)] hover:shadow-[0_22px_55px_hsl(var(--primary)/0.26)] hover:-translate-y-[1px] active:translate-y-0 transition-all"
-                        >
-                          <Save className="mr-2 h-4 w-4" />
-                          Save {l.toUpperCase()}
-                        </Button>
-
-                        <Link
-                          href={`/events/${id}`}
-                          className="inline-flex items-center justify-center rounded-2xl h-11 px-4 font-semibold border bg-background hover:bg-muted/70 hover:shadow-[var(--shadow-sm)] transition-all"
-                        >
-                          Preview public
-                        </Link>
+                      <div>
+                        <label className="text-sm font-medium block mb-2">Detailed Content</label>
+                        <RichTextEditor value={forms[l].contentHtml} onChange={(html) => setForms((p) => ({ ...p, [l]: { ...p[l], contentHtml: html } }))} />
                       </div>
+
+                      <Button onClick={() => void saveTranslation(l)} disabled={upsertTr.isPending} variant="outline" className="w-full h-11">
+                        <Save className="mr-2 h-4 w-4" />
+                        Save {l.toUpperCase()}
+                      </Button>
                     </div>
                   )}
                 />

@@ -30,7 +30,9 @@ export const sessions = pgTable(
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
+  username: varchar("username").unique(),
+  email: varchar("email").unique().notNull(),
+  password: varchar("password"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
@@ -78,6 +80,7 @@ export const projects = pgTable(
     slug: varchar("slug", { length: 200 }).notNull().unique(),
     isFeatured: boolean("is_featured").notNull().default(false),
     coverImagePath: text("cover_image_path"),
+    youtubeUrl: text("youtube_url"),
     createdByAdminId: integer("created_by_admin_id").references(() => admins.id),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -114,7 +117,13 @@ export const events = pgTable(
     slug: varchar("slug", { length: 200 }).notNull().unique(),
     startDate: timestamp("start_date"),
     endDate: timestamp("end_date"),
+    registrationStartDate: timestamp("registration_start_date"),
+    registrationEndDate: timestamp("registration_end_date"),
     coverImagePath: text("cover_image_path"),
+    flyerImagePath: text("flyer_image_path"),
+    registrationFormUrl: text("registration_form_url"),
+    eventPrice: text("event_price"),
+    participationType: text("participation_type"),
     createdByAdminId: integer("created_by_admin_id").references(() => admins.id),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -133,6 +142,9 @@ export const eventTranslations = pgTable(
     status: contentStatusEnum("status").notNull().default("draft"),
     title: text("title").notNull(),
     location: text("location"),
+    summary: text("summary"),
+    introduction: text("introduction"),
+    requirements: text("requirements"),
     contentHtml: text("content_html").notNull(),
   },
   (table) => [
@@ -186,7 +198,9 @@ export type EventTranslation = typeof eventTranslations.$inferSelect;
 export type InsertEventTranslation = z.infer<typeof insertEventTranslationSchema>;
 
 export type CreateAdminRequest = {
-  userId: string;
+  username: string;
+  email: string;
+  password: string;
   role: "super_admin" | "admin";
 };
 
@@ -199,6 +213,7 @@ export type CreateProjectRequest = {
   slug: string;
   isFeatured?: boolean;
   coverImagePath?: string | null;
+  youtubeUrl?: string | null;
   translations: Array<{
     language: "en" | "hi" | "mr";
     status?: "draft" | "published";
@@ -212,6 +227,7 @@ export type UpdateProjectRequest = Partial<{
   slug: string;
   isFeatured: boolean;
   coverImagePath: string | null;
+  youtubeUrl: string | null;
 }>;
 
 export type UpsertProjectTranslationRequest = {
@@ -226,12 +242,21 @@ export type CreateEventRequest = {
   slug: string;
   startDate?: string | null;
   endDate?: string | null;
+  registrationStartDate?: string | null;
+  registrationEndDate?: string | null;
   coverImagePath?: string | null;
+  flyerImagePath?: string | null;
+  registrationFormUrl?: string | null;
+  eventPrice?: string | null;
+  participationType?: string | null;
   translations: Array<{
     language: "en" | "hi" | "mr";
     status?: "draft" | "published";
     title: string;
     location?: string | null;
+    summary?: string | null;
+    introduction?: string | null;
+    requirements?: string | null;
     contentHtml: string;
   }>;
 };
@@ -240,7 +265,13 @@ export type UpdateEventRequest = Partial<{
   slug: string;
   startDate: string | null;
   endDate: string | null;
+  registrationStartDate: string | null;
+  registrationEndDate: string | null;
   coverImagePath: string | null;
+  flyerImagePath: string | null;
+  registrationFormUrl: string | null;
+  eventPrice: string | null;
+  participationType: string | null;
 }>;
 
 export type UpsertEventTranslationRequest = {
@@ -248,6 +279,9 @@ export type UpsertEventTranslationRequest = {
   status?: "draft" | "published";
   title: string;
   location?: string | null;
+  summary?: string | null;
+  introduction?: string | null;
+  requirements?: string | null;
   contentHtml: string;
 };
 

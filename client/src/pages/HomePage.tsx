@@ -2,10 +2,12 @@ import { Shell } from "@/components/Shell";
 import { useI18n } from "@/hooks/use-i18n";
 import { useHomeFeatured } from "@/hooks/use-home";
 import { useProjects } from "@/hooks/use-projects";
+import { useEvents } from "@/hooks/use-events";
 import { ContentCard } from "@/components/ContentCard";
 import { Link } from "wouter";
 import { ArrowUpRight, FolderKanban, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect, useMemo } from "react";
 
 function pickTranslation<T extends { language: string; title: string; summary?: string | null; contentHtml?: string }>(
   translations: T[],
@@ -20,104 +22,195 @@ export default function HomePage() {
   const { lang, t } = useI18n();
   const featured = useHomeFeatured({ lang });
   const allProjects = useProjects({ lang });
+  const allEvents = useEvents({ lang });
+  const [currentImage, setCurrentImage] = useState(0);
+
+  // Filter events with open registration
+  const openEvents = useMemo(() => {
+    if (!allEvents.data) return [];
+    const now = new Date();
+    return allEvents.data.filter((item) => {
+      const regStart = item.event.registrationStartDate ? new Date(item.event.registrationStartDate) : null;
+      const regEnd = item.event.registrationEndDate ? new Date(item.event.registrationEndDate) : null;
+      
+      // Registration is open if:
+      // 1. Both dates exist
+      // 2. Current time is between start and end
+      if (regStart && regEnd) {
+        return now >= regStart && now <= regEnd;
+      }
+      return false;
+    });
+  }, [allEvents.data]);
+
+  const carouselImages = [
+    "/src/home-c1.jpeg",
+    "/src/home-c2.jpg",
+    "/src/home-c3.jpeg",
+    "/src/home-c4.jpeg",
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % carouselImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const featuredItems = featured.data?.featuredProjects || [];
   const nonFeaturedCount = (allProjects.data || []).length - featuredItems.length;
 
   return (
     <Shell>
-      <div className="animate-fadeUp">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_.9fr] gap-6 lg:gap-8 items-stretch">
-          <div className="rounded-[28px] border bg-card/70 shadow-[var(--shadow-lg)] backdrop-blur overflow-hidden flex flex-col justify-center">
-            <div className="p-6 md:p-10">
-              <div className="inline-flex items-center gap-2 rounded-2xl border bg-background px-3 py-2 text-xs font-semibold text-foreground/80">
-                <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-saffron))]" />
-                <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-navy))]" />
-                <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-green))]" />
-                Civic Stewardship
-              </div>
-
-              <h1 className="mt-4 text-4xl md:text-6xl font-bold leading-[1.05]">
-                Effort is a <span className="text-[hsl(var(--tri-saffron))]">thought.</span>
-              </h1>
-
-              <p className="mt-4 text-lg md:text-xl text-muted-foreground font-medium max-w-prose">
-                To do something selflessly for society.
-              </p>
-
-              <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="/projects"
-                  className={cn(
-                    "inline-flex items-center justify-center rounded-2xl h-14 px-8 text-base font-bold",
-                    "bg-gradient-to-r from-primary to-primary/85 text-primary-foreground",
-                    "shadow-[0_18px_42px_hsl(var(--primary)/0.22)] hover:shadow-[0_22px_55px_hsl(var(--primary)/0.28)]",
-                    "hover:-translate-y-[1px] active:translate-y-0 transition-all",
-                  )}
-                >
-                  <FolderKanban className="mr-2 h-5 w-5" />
-                  {t.nav.projects}
-                  <ArrowUpRight className="ml-2 h-5 w-5" />
-                </Link>
-
-                <Link
-                  href="/events"
-                  className={cn(
-                    "inline-flex items-center justify-center rounded-2xl h-14 px-8 text-base font-bold",
-                    "border-2 bg-background hover:bg-muted/70 hover:shadow-[var(--shadow-md)] transition-all",
-                  )}
-                >
-                  <CalendarDays className="mr-2 h-5 w-5 text-muted-foreground" />
-                  {t.nav.events}
-                </Link>
-              </div>
-            </div>
-            <div className="h-2 bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-white to-[hsl(var(--tri-green))]" />
+      <div className="animate-fadeUp space-y-16">
+        {/* HERO SECTION */}
+        <div className="relative rounded-[32px] border-2 border-primary/15 shadow-2xl overflow-hidden">
+          {/* Background Carousel */}
+          <div className="absolute inset-0 z-0">
+            {carouselImages.map((img, idx) => (
+              <img
+                key={img}
+                src={img}
+                alt={`Background ${idx + 1}`}
+                className={cn(
+                  "absolute inset-0 w-full h-full object-cover transition-opacity duration-1000",
+                  currentImage === idx ? "opacity-100" : "opacity-0"
+                )}
+              />
+            ))}
+            <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/75 to-background/80" />
           </div>
 
-          <div className="relative rounded-[28px] border shadow-[var(--shadow-lg)] overflow-hidden min-h-[300px] lg:min-h-full">
-            <img 
-              src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=2560" 
-              alt="Nature background"
-              className="absolute inset-0 w-full h-full object-cover opacity-60"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80 lg:bg-gradient-to-r lg:to-background/40" />
-            <div className="relative h-full p-8 flex flex-col justify-end lg:justify-center">
-              <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md p-6 max-w-md">
-                <div className="text-xs font-bold uppercase tracking-widest text-white/70">Our Vision</div>
-                <div className="mt-2 text-xl font-bold text-white">Sustainable growth through selfless community action.</div>
-                <div className="mt-4 flex gap-2">
-                  <div className="h-1 w-8 rounded-full bg-[hsl(var(--tri-saffron))]" />
-                  <div className="h-1 w-8 rounded-full bg-white" />
-                  <div className="h-1 w-8 rounded-full bg-[hsl(var(--tri-green))]" />
-                </div>
-              </div>
+          <div className="relative z-10 flex flex-col px-6 pt-8 pb-10 md:px-10 md:pt-12 md:pb-14 lg:px-12 lg:pt-14 lg:pb-16 min-h-[420px] md:min-h-[480px] lg:min-h-[540px]">
+            
+            <div className="inline-flex items-center gap-1.5 mb-6 md:mb-8">
+              <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-saffron))] animate-pulse" style={{ animationDelay: '0ms' }} />
+              <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-navy))] animate-pulse" style={{ animationDelay: '150ms' }} />
+              <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-green))] animate-pulse" style={{ animationDelay: '300ms' }} />
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.3] tracking-tight bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-foreground to-[hsl(var(--tri-green))] bg-clip-text text-transparent mb-4 md:mb-6 pt-6 pb-3 will-change-transform">
+              {t.home.heroTitle}
+            </h1>
+
+            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 font-semibold max-w-2xl mb-3 md:mb-4 leading-relaxed">
+              {t.home.heroSubtitle}
+            </p>
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground/75 max-w-xl mb-8 md:mb-10 leading-relaxed">
+              {t.home.heroTagline}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mt-auto">
+              <Link href="/projects" className={cn(
+                "inline-flex items-center justify-center rounded-full h-12 md:h-14 px-8 md:px-10 text-base md:text-lg font-bold shadow-lg",
+                "bg-[hsl(var(--tri-navy))] text-white hover:bg-[hsl(var(--tri-saffron))]",
+                "hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out"
+              )}>
+                <FolderKanban className="mr-2 h-5 w-5" />
+                {t.nav.projects}
+                <ArrowUpRight className="ml-2 h-5 w-5" />
+              </Link>
+              <Link href="/events" className={cn(
+                "inline-flex items-center justify-center rounded-full h-12 md:h-14 px-8 md:px-10 text-base md:text-lg font-semibold",
+                "border-2 border-primary/20 bg-card/60 backdrop-blur-md hover:bg-card/80 hover:border-primary/30",
+                "hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out text-foreground"
+              )}>
+                <CalendarDays className="mr-2 h-5 w-5" />
+                {t.nav.events}
+              </Link>
             </div>
           </div>
+
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-white to-[hsl(var(--tri-green))] flag-flow" />
         </div>
 
-        <section className="mt-10 md:mt-12">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <div className="text-xs font-semibold text-muted-foreground">Highlights</div>
-              <h2 className="mt-1 text-2xl md:text-3xl font-bold">{t.labels.featuredProjects}</h2>
+        {/* Open Events Section */}
+        {openEvents.length > 0 && (
+          <section>
+            <div className="flex items-end justify-between gap-4 mb-6">
+              <div>
+                <div className="inline-flex items-center gap-2 mb-2">
+                  <span className="h-1 w-8 rounded-full bg-gradient-to-r from-[hsl(var(--tri-saffron))] to-[hsl(var(--tri-green))]" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Registration Open</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold">New Events</h2>
+              </div>
+              <Link href="/events" className="text-sm font-semibold text-[hsl(var(--tri-navy))] hover:text-[hsl(var(--tri-saffron))] transition-colors flex items-center gap-1">
+                View All <ArrowUpRight className="h-4 w-4" />
+              </Link>
             </div>
-            <Link href="/projects" className="text-sm font-semibold text-primary hover:underline">
-              {t.actions.viewAll} <ArrowUpRight className="inline h-4 w-4" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {openEvents.slice(0, 3).map((item) => {
+                const tr = pickTranslation(item.translations as any[], lang);
+                const title = tr?.title || "Untitled";
+                return (
+                  <Link key={item.event.id} href={`/events/${item.event.id}`}>
+                    <div className="rounded-2xl border-2 border-primary/20 bg-card p-6 hover:shadow-lg hover:border-primary/40 transition-all cursor-pointer h-full">
+                      {item.event.flyerImagePath && (
+                        <img
+                          src={item.event.flyerImagePath}
+                          alt={title}
+                          className="w-full h-48 object-cover rounded-lg mb-4"
+                        />
+                      )}
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[hsl(var(--tri-saffron))]/10 border border-[hsl(var(--tri-saffron))]/20 mb-3">
+                        <span className="h-2 w-2 rounded-full bg-[hsl(var(--tri-saffron))] animate-pulse" />
+                        <span className="text-xs font-semibold text-[hsl(var(--tri-saffron))]">Registration Open</span>
+                      </div>
+                      <h3 className="text-lg font-bold mb-2">{title}</h3>
+                      {(tr as any)?.location && (
+                        <p className="text-sm text-muted-foreground mb-2">
+                          📍 {(tr as any).location}
+                        </p>
+                      )}
+                      {item.event.eventPrice && (
+                        <p className="text-sm font-semibold text-primary">
+                          {item.event.eventPrice === "Free" ? "Free" : `₹${item.event.eventPrice}`}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {openEvents.length === 0 && (
+          <section>
+            <div className="rounded-2xl border-2 border-dashed border-muted bg-card/50 p-8 text-center">
+              <CalendarDays className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <div className="text-lg font-bold text-muted-foreground">No Upcoming Events</div>
+              <div className="mt-2 text-sm text-muted-foreground">Check back soon for new events with open registration.</div>
+            </div>
+          </section>
+        )}
+
+        {/* Featured Projects Section */}
+        <section>
+          <div className="flex items-end justify-between gap-4 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-2 mb-2">
+                <span className="h-1 w-8 rounded-full bg-gradient-to-r from-[hsl(var(--tri-saffron))] to-[hsl(var(--tri-green))]" />
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.home.highlights}</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold">{t.labels.featuredProjects}</h2>
+            </div>
+            <Link href="/projects" className="text-sm font-semibold text-[hsl(var(--tri-navy))] hover:text-[hsl(var(--tri-saffron))] transition-colors flex items-center gap-1">
+              {t.actions.viewAll} <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
-
-          <div className="mt-5 grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-5">
             {featured.isLoading ? (
-              <div className="rounded-3xl border bg-card/50 p-6 shimmer" style={{ backgroundImage: "linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--card)) 30%, hsl(var(--muted)) 60%)" }} />
+              <div className="rounded-3xl border bg-card/50 p-6 h-48 shimmer" style={{ backgroundImage: "linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--card)) 30%, hsl(var(--muted)) 60%)" }} />
             ) : featured.isError ? (
-              <div className="rounded-3xl border bg-card p-6 shadow-[var(--shadow-md)]">
-                <div className="text-sm font-bold">Could not load featured projects</div>
+              <div className="rounded-3xl border-2 border-destructive/20 bg-card p-6 shadow-lg">
+                <div className="text-sm font-bold text-destructive">Could not load featured projects</div>
                 <div className="mt-1 text-sm text-muted-foreground">{(featured.error as Error)?.message}</div>
               </div>
             ) : featuredItems.length === 0 ? (
-              <div className="rounded-3xl border bg-card p-8 shadow-[var(--shadow-md)]">
-                <div className="text-lg font-bold">{t.empty.featured}</div>
+              <div className="rounded-3xl border-2 border-dashed border-muted bg-card/50 p-8 text-center">
+                <div className="text-lg font-bold text-muted-foreground">{t.empty.featured}</div>
                 <div className="mt-2 text-sm text-muted-foreground">Admins can feature up to 4 projects for the home page.</div>
               </div>
             ) : (
@@ -140,39 +233,68 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-16 md:mt-24 overflow-hidden rounded-[40px] border-2 border-primary/10 bg-gradient-to-br from-card to-background shadow-2xl relative">
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
-          </div>
-          <div className="relative p-10 md:p-16 flex flex-col md:flex-row items-center gap-12">
-            <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-sm font-bold mb-6">
-                <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-                Impact in Action
-              </div>
-              <h2 className="text-3xl md:text-5xl font-extrabold leading-tight">
-                Selfless service for a <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(var(--tri-saffron))] to-[hsl(var(--tri-green))]">stronger community.</span>
-              </h2>
-              <p className="mt-6 text-lg text-muted-foreground font-medium max-w-lg mx-auto md:mx-0">
-                Witness our collective efforts in building a sustainable future through dedication and community collaboration.
-              </p>
+        {/* Impact Section */}
+        <section className="overflow-hidden rounded-[32px] border-2 border-primary/10 bg-gradient-to-br from-card/90 to-background shadow-2xl backdrop-blur-sm relative group">
+          <div className="grid md:grid-cols-[1.2fr_1fr] gap-0">
+            <div className="relative h-64 md:h-auto bg-gradient-to-br from-[hsl(var(--tri-saffron))]/10 via-background to-[hsl(var(--tri-green))]/10 overflow-hidden">
+              <img src="/src/home.jpg" alt="Our Mission" className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
             </div>
-            <div className="flex-1 w-full max-w-md aspect-video rounded-3xl overflow-hidden border-4 border-white shadow-2xl relative group">
-              <img 
-                src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&q=80&w=800" 
-                alt="Social work animation placeholder"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-20 w-20 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center animate-pulse">
-                  <div className="h-12 w-12 rounded-full bg-[hsl(var(--tri-navy))] flex items-center justify-center">
-                    <ArrowUpRight className="h-6 w-6 text-white" />
-                  </div>
+            <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+              <div className="inline-flex items-center gap-2 mb-4">
+                <span className="h-1 w-8 rounded-full bg-gradient-to-r from-[hsl(var(--tri-saffron))] to-[hsl(var(--tri-green))]" />
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t.home.missionLabel}</span>
+              </div>
+              <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 leading-tight">
+                {t.home.missionTitle}
+              </h3>
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4">
+                {t.home.missionDesc}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(var(--tri-saffron))]/10 border border-[hsl(var(--tri-saffron))]/20">
+                  <span className="text-sm font-semibold text-[hsl(var(--tri-saffron))]">{t.home.badgeCommunity}</span>
+                </div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(var(--tri-navy))]/10 border border-[hsl(var(--tri-navy))]/20">
+                  <span className="text-sm font-semibold text-[hsl(var(--tri-navy))]">{t.home.badgeCivic}</span>
+                </div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(var(--tri-green))]/10 border border-[hsl(var(--tri-green))]/20">
+                  <span className="text-sm font-semibold text-[hsl(var(--tri-green))]">{t.home.badgeImpact}</span>
                 </div>
               </div>
             </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-white to-[hsl(var(--tri-green))] flag-flow" />
+        </section>
+
+        {/* Values Section */}
+        <section className="grid md:grid-cols-3 gap-6">
+          <div className="rounded-3xl border-2 border-[hsl(var(--tri-saffron))]/20 bg-gradient-to-br from-[hsl(var(--tri-saffron))]/5 to-card p-6 md:p-8 hover:shadow-lg transition-all duration-300">
+            <div className="h-12 w-12 rounded-full bg-[hsl(var(--tri-saffron))]/20 flex items-center justify-center mb-4">
+              <span className="text-2xl">🤝</span>
+            </div>
+            <h4 className="text-xl font-bold mb-3">{t.home.valueUnity}</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t.home.valueUnityDesc}
+            </p>
+          </div>
+          <div className="rounded-3xl border-2 border-[hsl(var(--tri-navy))]/20 bg-gradient-to-br from-[hsl(var(--tri-navy))]/5 to-card p-6 md:p-8 hover:shadow-lg transition-all duration-300">
+            <div className="h-12 w-12 rounded-full bg-[hsl(var(--tri-navy))]/20 flex items-center justify-center mb-4">
+              <span className="text-2xl">💡</span>
+            </div>
+            <h4 className="text-xl font-bold mb-3">{t.home.valueInnovation}</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t.home.valueInnovationDesc}
+            </p>
+          </div>
+          <div className="rounded-3xl border-2 border-[hsl(var(--tri-green))]/20 bg-gradient-to-br from-[hsl(var(--tri-green))]/5 to-card p-6 md:p-8 hover:shadow-lg transition-all duration-300">
+            <div className="h-12 w-12 rounded-full bg-[hsl(var(--tri-green))]/20 flex items-center justify-center mb-4">
+              <span className="text-2xl">🌱</span>
+            </div>
+            <h4 className="text-xl font-bold mb-3">{t.home.valueSustainable}</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t.home.valueSustainableDesc}
+            </p>
           </div>
         </section>
       </div>

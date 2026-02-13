@@ -1,16 +1,38 @@
+import 'dotenv/config'
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 
 const app = express();
 const httpServer = createServer(app);
+const SessionStore = MemoryStore(session);
 
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
   }
 }
+
+// Session middleware - MUST be before body parsers
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "tiranga-hub-secret-key-change-in-production",
+    resave: false,
+    saveUninitialized: false,
+    store: new SessionStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    }),
+    cookie: {
+      secure: false, // Set to false for development
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      sameSite: 'lax',
+    },
+  })
+);
 
 app.use(
   express.json({
@@ -90,14 +112,11 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+  
+
+httpServer.listen(port, () => {
+  log(`Server running on http://localhost:${port}`);
+});
+
+
 })();

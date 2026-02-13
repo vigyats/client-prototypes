@@ -2,6 +2,7 @@ import { PropsWithChildren, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Footer } from "@/components/Footer";
 import { useI18n } from "@/hooks/use-i18n";
 import { useAuth } from "@/hooks/use-auth";
 import { useAdminMe } from "@/hooks/use-admins";
@@ -13,17 +14,11 @@ function Brand() {
   const { t } = useI18n();
   return (
     <Link href="/" className="flex items-center gap-3">
-      <div className="relative h-11 w-11 rounded-2xl border bg-card shadow-[var(--shadow-md)] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--tri-saffron))]/25 via-white to-[hsl(var(--tri-green))]/25" />
-        <div className="absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-white to-[hsl(var(--tri-green))]" />
-        <div className="absolute inset-0 grid place-items-center">
-          <div className="h-5 w-5 rounded-full border-2 border-[hsl(var(--tri-navy))]/50" />
-        </div>
-      </div>
-      <div className="leading-tight">
-        <div className="text-sm font-bold tracking-tight">{t.brand}</div>
-        <div className="text-xs text-muted-foreground">{t.tagline}</div>
-      </div>
+       <img
+        src="/src/logo.png"
+        alt="Logo"
+        className="h-12 w-auto"
+      />
     </Link>
   );
 }
@@ -39,6 +34,8 @@ function TopNav() {
     { href: "/", label: t.nav.home },
     { href: "/projects", label: t.nav.projects },
     { href: "/events", label: t.nav.events },
+    { href: "/about", label: t.nav.about },
+    { href: "/donate", label: t.nav.donate },
   ];
 
   const showAdmin = isAuthenticated && adminMe?.isAdmin;
@@ -49,7 +46,7 @@ function TopNav() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4 flag-border">
           <Brand />
           
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2 ml-24">
             {nav.map((n) => {
               const active = loc === n.href;
               return (
@@ -166,11 +163,13 @@ function AuthButtons({ mobile }: { mobile?: boolean }) {
   if (!isAuthenticated) {
     return (
       <Button
-        onClick={() => (window.location.href = "/api/login")}
+        onClick={() => (window.location.href = "/admin/login")}
         className={cn(
           "rounded-2xl px-4 h-11 font-bold",
-          "bg-gradient-to-r from-[hsl(var(--tri-saffron))] via-primary to-[hsl(var(--tri-green))]",
-          "text-primary-foreground shadow-lg shadow-primary/20",
+          "bg-transparent hover:bg-black/5",
+          "text-black hover:text-black/90",
+          "border border-black/20 hover:border-black/40",
+          "shadow-sm hover:shadow-md",
           mobile && "w-full h-14 text-lg"
         )}
       >
@@ -251,30 +250,9 @@ export function Shell({ children }: PropsWithChildren) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
         {children}
       </main>
-      <footer className="border-t bg-background/70 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="rounded-3xl border bg-card/60 shadow-[var(--shadow-sm)] p-6 md:p-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div>
-                <div className="text-sm font-bold tracking-tight">Public-good communication, built for clarity.</div>
-                <div className="mt-1 text-sm text-muted-foreground">
-                  Tricolour accents. Multilingual publishing. Admin governance.
-                </div>
-              </div>
-              <div className="h-11 overflow-hidden rounded-2xl border bg-background">
-                <div className="h-full w-full grid grid-cols-3">
-                  <div className="bg-[hsl(var(--tri-saffron))]/90" />
-                  <div className="bg-white" />
-                  <div className="bg-[hsl(var(--tri-green))]/90" />
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 text-xs text-muted-foreground">
-              © {new Date().getFullYear()} • Built with secure auth, structured content, and a premium civic aesthetic.
-            </div>
-          </div>
-        </div>
-      </footer>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Footer />
+      </div>
     </div>
   );
 }
