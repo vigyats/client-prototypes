@@ -44,10 +44,10 @@ export default function HomePage() {
   }, [allEvents.data]);
 
   const carouselImages = [
-    "/src/home-c1.jpeg",
-    "/src/home-c2.jpg",
-    "/src/home-c3.jpeg",
-    "/src/home-c4.jpeg",
+    "/home-c1.jpeg",
+    "/home-c2.jpg",
+    "/home-c3.jpeg",
+    "/home-c4.jpeg",
   ];
 
   useEffect(() => {
@@ -237,7 +237,7 @@ export default function HomePage() {
         <section className="overflow-hidden rounded-[32px] border-2 border-primary/10 bg-gradient-to-br from-card/90 to-background shadow-2xl backdrop-blur-sm relative group">
           <div className="grid md:grid-cols-[1.2fr_1fr] gap-0">
             <div className="relative h-64 md:h-auto bg-gradient-to-br from-[hsl(var(--tri-saffron))]/10 via-background to-[hsl(var(--tri-green))]/10 overflow-hidden">
-              <img src="/src/home.jpg" alt="Our Mission" className="absolute inset-0 w-full h-full object-cover" />
+              <img src="/home.jpg" alt="Our Mission" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
             </div>
             <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
