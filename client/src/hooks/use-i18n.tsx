@@ -50,7 +50,7 @@ const dict = {
   mr: {
     brand: "सिव्हिक इम्पॅक्ट स्टुडिओ",
     tagline: "प्रकल्प, कार्यक्रम आणि लोकहित कार्य — दर्जेदार मांडणी.",
-    nav: { home: "मुख्य", प्रकल्प: "प्रकल्प", events: "कार्यक्रम", admin: "अ‍ॅडमिन" },
+    nav: { home: "मुख्य", projects: "प्रकल्प", events: "कार्यक्रम", admin: "अ‍ॅडमिन" },
     actions: { login: "अ‍ॅडमिन लॉगिन", logout: "लॉगआउट", open: "उघडा", viewAll: "सर्व पहा", create: "तयार करा", update: "अपडेट" },
     labels: {
       featuredProjects: "वैशिष्ट्यपूर्ण प्रकल्प",
@@ -83,7 +83,7 @@ export function I18nProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "en" || stored === "hi" || stored === "mr") setLang(stored);
+    if (stored === "en" || stored === "hi" || stored === "mr") setLang(stored as Lang);
   }, []);
 
   useEffect(() => {
