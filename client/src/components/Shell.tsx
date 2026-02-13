@@ -15,7 +15,7 @@ function Brand() {
   return (
     <Link href="/" className="flex items-center gap-3">
        <img
-        src="/src/logo.png"
+        src="/logo.png"
         alt="Logo"
         className="h-12 w-auto"
       />
