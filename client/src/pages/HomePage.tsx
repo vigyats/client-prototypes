@@ -73,12 +73,12 @@ export default function HomePage() {
                 src={img}
                 alt={`Background ${idx + 1}`}
                 className={cn(
-                  "absolute inset-0 w-full h-full object-cover transition-opacity duration-1000",
+                  "absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 grayscale",
                   currentImage === idx ? "opacity-100" : "opacity-0"
                 )}
               />
             ))}
-            <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/75 to-background/80" />
+            <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
           </div>
 
           <div className="relative z-10 flex flex-col px-6 pt-8 pb-10 md:px-10 md:pt-12 md:pb-14 lg:px-12 lg:pt-14 lg:pb-16 min-h-[420px] md:min-h-[480px] lg:min-h-[540px]">
@@ -93,18 +93,20 @@ export default function HomePage() {
               {t.home.heroTitle}
             </h1>
 
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground/90 font-semibold max-w-2xl mb-3 md:mb-4 leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-foreground font-semibold max-w-2xl mb-3 md:mb-4 leading-relaxed drop-shadow-sm">
               {t.home.heroSubtitle}
             </p>
-            <p className="text-sm sm:text-base md:text-lg text-muted-foreground/75 max-w-xl mb-8 md:mb-10 leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-foreground/90 max-w-xl mb-8 md:mb-10 leading-relaxed drop-shadow-sm">
               {t.home.heroTagline}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mt-auto">
               <Link href="/projects" className={cn(
-                "inline-flex items-center justify-center rounded-full h-12 md:h-14 px-8 md:px-10 text-base md:text-lg font-bold shadow-lg",
-                "bg-[hsl(var(--tri-navy))] text-white hover:bg-[hsl(var(--tri-saffron))]",
-                "hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out"
+                "inline-flex items-center justify-center rounded-full h-12 md:h-14 px-8 md:px-10 text-base md:text-lg font-bold",
+                "bg-transparent text-foreground",
+                "border-2 border-[hsl(var(--tri-navy))] hover:border-[hsl(var(--tri-saffron))]",
+                "hover:shadow-[0_0_25px_hsl(var(--tri-navy)/0.7),0_0_40px_hsl(var(--tri-saffron)/0.5)]",
+                "hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out"
               )}>
                 <FolderKanban className="mr-2 h-5 w-5" />
                 {t.nav.projects}
@@ -112,8 +114,10 @@ export default function HomePage() {
               </Link>
               <Link href="/events" className={cn(
                 "inline-flex items-center justify-center rounded-full h-12 md:h-14 px-8 md:px-10 text-base md:text-lg font-semibold",
-                "border-2 border-primary/20 bg-card/60 backdrop-blur-md hover:bg-card/80 hover:border-primary/30",
-                "hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out text-foreground"
+                "bg-transparent text-foreground",
+                "border-2 border-[hsl(var(--tri-green))] hover:border-[hsl(var(--tri-saffron))]",
+                "hover:shadow-[0_0_25px_hsl(var(--tri-green)/0.7),0_0_40px_hsl(var(--tri-saffron)/0.5)]",
+                "hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out"
               )}>
                 <CalendarDays className="mr-2 h-5 w-5" />
                 {t.nav.events}

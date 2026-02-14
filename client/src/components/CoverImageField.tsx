@@ -130,8 +130,8 @@ export function CoverImageField({
                     e.currentTarget.value = "";
                   }}
                   className={cn(
-                    "block w-full cursor-pointer rounded-2xl border border-border/70 bg-card/50 px-4 py-3 text-sm font-semibold text-foreground/85",
-                    "file:mr-4 file:rounded-xl file:border-0 file:bg-primary file:px-3 file:py-2 file:text-sm file:font-semibold file:text-primary-foreground",
+                    "block w-full cursor-pointer rounded-2xl border border-border/70 bg-card/50 px-3 py-2.5 text-xs sm:text-sm font-semibold text-transparent",
+                    "file:mr-2 sm:file:mr-4 file:rounded-xl file:border-0 file:bg-primary file:px-2 sm:file:px-3 file:py-1.5 sm:file:py-2 file:text-xs sm:file:text-sm file:font-semibold file:text-primary-foreground",
                     "hover:bg-card hover:shadow-[var(--shadow-sm)] transition-all",
                     "focus:outline-none focus:ring-4 focus:ring-ring/20",
                   )}

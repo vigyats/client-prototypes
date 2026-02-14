@@ -7,17 +7,20 @@ import { useI18n } from "@/hooks/use-i18n";
 import { useAuth } from "@/hooks/use-auth";
 import { useAdminMe } from "@/hooks/use-admins";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, CalendarDays, FolderKanban, Shield, LogOut, ArrowRight, Menu, X } from "lucide-react";
+import { LayoutDashboard, CalendarDays, FolderKanban, Shield, LogOut, ArrowRight, Menu, X, Sun, Moon, Images } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useTheme } from "@/components/ThemeProvider";
 
 function Brand() {
   const { t } = useI18n();
+  const { theme } = useTheme();
   return (
-    <Link href="/" className="flex items-center gap-3">
+    <Link href="/" className="flex items-center gap-3 flex-shrink-0">
        <img
-        src="/logo.png"
+        src={theme === "dark" ? "/logo-1.png" : "/logo.png"}
         alt="Logo"
-        className="h-12 w-auto"
+        className="h-12 w-auto md:h-14 object-contain"
+        style={{ minWidth: 'auto' }}
       />
     </Link>
   );
@@ -29,6 +32,7 @@ function TopNav() {
   const { isAuthenticated } = useAuth();
   const { data: adminMe } = useAdminMe();
   const [open, setOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const nav = [
     { href: "/", label: t.nav.home },
@@ -41,8 +45,8 @@ function TopNav() {
   const showAdmin = isAuthenticated && adminMe?.isAdmin;
 
   return (
-    <header className="sticky top-0 z-40">
-      <div className="bg-background/75 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+    <header className="sticky top-0 z-40 shadow-md">
+      <div className="bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/90 border-b-2 border-primary/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4 flag-border">
           <Brand />
           
@@ -78,6 +82,23 @@ function TopNav() {
 
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-2">
+              <Link href="/gallery">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-xl border border-transparent hover:border-[hsl(var(--tri-green))] hover:shadow-[0_0_15px_hsl(var(--tri-green)/0.5)] transition-all duration-300"
+                >
+                  <Images className="h-5 w-5" />
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-xl border border-transparent hover:border-[hsl(var(--tri-saffron))] hover:shadow-[0_0_15px_hsl(var(--tri-saffron)/0.5)] transition-all duration-300"
+              >
+                {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              </Button>
               <LanguageSwitcher compact />
               <AuthButtons />
             </div>
@@ -88,14 +109,13 @@ function TopNav() {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[350px] p-0 rounded-l-[32px] border-l shadow-2xl">
-                <div className="flex flex-col h-full bg-heritage grain">
+              <SheetContent side="right" className="w-[300px] sm:w-[350px] p-0 rounded-l-[32px] border-l shadow-2xl overflow-y-auto">
+                <div className="flex flex-col min-h-full bg-heritage grain">
                   <div className="p-6 border-b bg-background/50 backdrop-blur">
                     <div className="flex items-center justify-between mb-8">
-                      <Brand />
-                      <Button variant="ghost" size="icon" onClick={() => setOpen(false)} className="rounded-xl">
-                        <X className="h-6 w-6" />
-                      </Button>
+                      <div className="flex items-center gap-3">
+                        <img src={theme === "dark" ? "/logo-1.png" : "/logo.png"} alt="Logo" className="h-10 w-auto" />
+                      </div>
                     </div>
                     
                     <div className="space-y-2">
@@ -130,10 +150,18 @@ function TopNav() {
 
                   <div className="mt-auto p-6 bg-background/50 backdrop-blur border-t">
                     <div className="flex flex-col gap-4">
+                      <Link href="/gallery" onClick={() => setOpen(false)} className="flex items-center justify-between bg-card/40 rounded-2xl border p-3 hover:bg-card/60 transition-all cursor-pointer">
+                        <span className="text-sm font-bold text-muted-foreground">{t.labels.gallery}</span>
+                        <Images className="h-5 w-5" />
+                      </Link>
                       <div className="flex items-center justify-between bg-card/40 rounded-2xl border p-3">
                         <span className="text-sm font-bold text-muted-foreground">{t.labels.language}</span>
                         <LanguageSwitcher compact />
                       </div>
+                      <button onClick={toggleTheme} className="flex items-center justify-between bg-card/40 rounded-2xl border p-3 hover:bg-card/60 transition-all cursor-pointer w-full">
+                        <span className="text-sm font-bold text-muted-foreground">{t.labels.theme}</span>
+                        {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                      </button>
                       <AuthButtons mobile />
                     </div>
                   </div>
@@ -166,10 +194,11 @@ function AuthButtons({ mobile }: { mobile?: boolean }) {
         onClick={() => (window.location.href = "/admin/login")}
         className={cn(
           "rounded-2xl px-4 h-11 font-bold",
-          "bg-transparent hover:bg-black/5",
-          "text-black hover:text-black/90",
-          "border border-black/20 hover:border-black/40",
-          "shadow-sm hover:shadow-md",
+          "bg-transparent hover:bg-transparent",
+          "text-foreground hover:text-foreground",
+          "border-2 border-[hsl(var(--tri-saffron))] hover:border-[hsl(var(--tri-green))]",
+          "hover:shadow-[0_0_20px_hsl(var(--tri-saffron)/0.6),0_0_30px_hsl(var(--tri-green)/0.4)]",
+          "transition-all duration-300",
           mobile && "w-full h-14 text-lg"
         )}
       >
@@ -203,10 +232,9 @@ function AuthButtons({ mobile }: { mobile?: boolean }) {
           variant="outline"
           disabled={isLoggingOut}
           onClick={() => logout()}
-          className="h-14 rounded-2xl border-border/70 bg-card/50 font-bold"
+          className="h-14 rounded-2xl bg-transparent border-2 border-[hsl(var(--tri-navy))] hover:border-[hsl(var(--tri-saffron))] hover:shadow-[0_0_20px_hsl(var(--tri-navy)/0.6)] font-bold transition-all duration-300"
         >
-          <LogOut className="mr-2 h-5 w-5" />
-          {t.actions.logout}
+          <LogOut className="h-5 w-5" />
         </Button>
       </div>
     );
@@ -234,10 +262,10 @@ function AuthButtons({ mobile }: { mobile?: boolean }) {
         variant="outline"
         disabled={isLoggingOut}
         onClick={() => logout()}
-        className="h-10 rounded-2xl border-border/70 bg-card/50 hover:bg-card hover:shadow-[var(--shadow-md)] transition-all"
+        className="h-10 rounded-2xl bg-transparent border-2 border-[hsl(var(--tri-navy))] hover:border-[hsl(var(--tri-green))] hover:shadow-[0_0_20px_hsl(var(--tri-navy)/0.6),0_0_30px_hsl(var(--tri-green)/0.4)] transition-all duration-300"
       >
-        <LogOut className="mr-2 h-4 w-4" />
-        {t.actions.logout}
+        <LogOut className="h-4 w-4" />
+        <span className="hidden sm:inline ml-2">{t.actions.logout}</span>
       </Button>
     </div>
   );
@@ -261,6 +289,7 @@ export function Shell({ children }: PropsWithChildren) {
 export function AdminShell({ children }: PropsWithChildren) {
   const [loc] = useLocation();
   const { t } = useI18n();
+  const { theme, toggleTheme } = useTheme();
 
   const items = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard, superOnly: false },
@@ -274,16 +303,33 @@ export function AdminShell({ children }: PropsWithChildren) {
 
   return (
     <div className="min-h-screen bg-heritage grain">
-      <div className="sticky top-0 z-40">
-        <div className="border-b bg-background/72 backdrop-blur flag-border">
+      <div className="sticky top-0 z-40 shadow-md">
+        <div className="border-b-2 border-primary/20 bg-background/95 backdrop-blur-md flag-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Link href="/" className="rounded-xl px-2 py-1 text-sm font-semibold hover:bg-muted/70 transition-all">
                 ← {t.nav.home}
               </Link>
-              <Brand />
+              <div className="hidden md:block">
+                <Link href="/" className="flex items-center gap-3 flex-shrink-0">
+                  <img
+                    src={theme === "dark" ? "/logo-1.png" : "/logo.png"}
+                    alt="Logo"
+                    className="h-12 w-auto md:h-14 object-contain"
+                    style={{ minWidth: 'auto' }}
+                  />
+                </Link>
+              </div>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-xl border border-transparent hover:border-[hsl(var(--tri-saffron))] hover:shadow-[0_0_15px_hsl(var(--tri-saffron)/0.5)] transition-all duration-300"
+              >
+                {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              </Button>
               <LanguageSwitcher compact />
               <AuthButtons />
             </div>

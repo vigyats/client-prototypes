@@ -175,7 +175,7 @@ export default function AdminEventEditPage() {
               <div className="mt-2 text-sm text-muted-foreground">Event does not exist.</div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:items-start">
               <div className="space-y-6">
                 <div className="rounded-lg border bg-card shadow-lg overflow-hidden">
                   <div className="p-5 border-b flex items-start justify-between gap-4">
@@ -210,25 +210,25 @@ export default function AdminEventEditPage() {
                       <Input value={registrationFormUrl} onChange={(e) => setRegistrationFormUrl(e.target.value)} placeholder="https://forms.google.com/..." />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-sm font-medium block mb-2">Registration Start</label>
-                        <Input type="datetime-local" value={registrationStartDate} onChange={(e) => setRegistrationStartDate(e.target.value)} />
+                        <Input type="datetime-local" value={registrationStartDate} onChange={(e) => setRegistrationStartDate(e.target.value)} className="text-xs sm:text-sm" />
                       </div>
                       <div>
                         <label className="text-sm font-medium block mb-2">Registration End</label>
-                        <Input type="datetime-local" value={registrationEndDate} onChange={(e) => setRegistrationEndDate(e.target.value)} />
+                        <Input type="datetime-local" value={registrationEndDate} onChange={(e) => setRegistrationEndDate(e.target.value)} className="text-xs sm:text-sm" />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-sm font-medium block mb-2">Event Start</label>
-                        <Input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                        <Input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="text-xs sm:text-sm" />
                       </div>
                       <div>
                         <label className="text-sm font-medium block mb-2">Event End</label>
-                        <Input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                        <Input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="text-xs sm:text-sm" />
                       </div>
                     </div>
 
@@ -239,7 +239,8 @@ export default function AdminEventEditPage() {
               </div>
 
               <div className="space-y-6">
-                <TranslationTabs
+                <div className="rounded-lg border bg-card shadow-lg overflow-hidden">
+                  <TranslationTabs
                   activeLang={activeLang}
                   onChangeLang={setActiveLang}
                   headerRight={
@@ -250,7 +251,7 @@ export default function AdminEventEditPage() {
                   }
                   render={(l) => (
                     <div className="space-y-5">
-                      <div className="rounded-lg border bg-card p-5 space-y-5">
+                      <div className="rounded-lg border bg-card p-5 space-y-5 flex-1">
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <label className="text-sm font-medium block mb-2">Title *</label>
@@ -314,6 +315,7 @@ export default function AdminEventEditPage() {
                     </div>
                   )}
                 />
+                </div>
               </div>
             </div>
           )}

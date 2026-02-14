@@ -11,6 +11,7 @@ import EventsPage from "@/pages/EventsPage";
 import EventDetailPage from "@/pages/EventDetailPage";
 import AboutPage from "@/pages/AboutPage";
 import DonatePage from "@/pages/DonatePage";
+import GalleryPage from "@/pages/GalleryPage";
 import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
 import AdminProjectsPage from "@/pages/admin/AdminProjectsPage";
 import AdminProjectEditPage from "@/pages/admin/AdminProjectEditPage";
@@ -21,6 +22,7 @@ import AdminLoginPage from "@/pages/admin/AdminLoginPage";
 import { RouteTricolourLoader } from "@/components/RouteTricolourLoader";
 import { useRouteLoader } from "@/hooks/use-route-loader";
 import { I18nProvider } from "@/hooks/use-i18n";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 function Router() {
   const { isRouteLoading } = useRouteLoader();
@@ -37,6 +39,7 @@ function Router() {
         <Route path="/events/:id" component={EventDetailPage} />
         <Route path="/about" component={AboutPage} />
         <Route path="/donate" component={DonatePage} />
+        <Route path="/gallery" component={GalleryPage} />
 
         {/* Admin */}
         <Route path="/admin/login" component={AdminLoginPage} />
@@ -58,10 +61,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <I18nProvider>
-          <ShadToaster />
-          <Router />
-        </I18nProvider>
+        <ThemeProvider>
+          <I18nProvider>
+            <ShadToaster />
+            <Router />
+          </I18nProvider>
+        </ThemeProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

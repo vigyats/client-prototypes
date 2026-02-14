@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/components/ThemeProvider";
 
 export default function AdminLoginPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     identifier: "",
@@ -48,6 +50,13 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
+        <div className="mb-6 flex justify-center">
+          <img
+            src={theme === "dark" ? "/logo-1.png" : "/logo.png"}
+            alt="Logo"
+            className="h-20 w-auto object-contain transition-opacity duration-300"
+          />
+        </div>
         <div className="rounded-lg border bg-card p-8 shadow-lg">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold">Admin Login</h1>
@@ -92,7 +101,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full px-4 py-2 font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-2 font-bold bg-transparent text-foreground rounded-2xl border-2 border-[hsl(var(--tri-navy))] hover:border-[hsl(var(--tri-saffron))] hover:shadow-[0_0_25px_hsl(var(--tri-navy)/0.7),0_0_40px_hsl(var(--tri-saffron)/0.5)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
             >
               {isLoading ? "Logging in..." : "Login"}
             </button>

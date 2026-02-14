@@ -9,7 +9,7 @@ const dict = {
     brand: "Prayas Yavatmal",
     tagline: " ",
     nav: { home: "Home", projects: "Projects", events: "Events", admin: "Admin", about: "About", donate: "Donate Us" },
-    actions: { login: "Admin Login", logout: "Logout", open: "Open", viewAll: "View all", create: "Create", update: "Update" },
+    actions: { login: "Admin Login", logout: "Logout", open: "Open", viewAll: "View all", create: "Create", update: "Update", uploadImage: "Upload Image", save: "Save", cancel: "Cancel", delete: "Delete", edit: "Edit" },
     labels: {
       featuredProjects: "Featured Projects",
       allProjects: "All Projects",
@@ -19,6 +19,11 @@ const dict = {
       language: "Language",
       cover: "Cover",
       translations: "Translations",
+      contactUs: "Contact Us",
+      gallery: "Gallery",
+      theme: "Theme",
+      adminPanel: "Admin Panel",
+      dashboard: "Dashboard",
     },
     empty: {
       featured: "No featured projects yet.",
@@ -90,7 +95,7 @@ const dict = {
     brand: "प्रयास यवतमाल",
     tagline: " ",
     nav: { home: "होम", projects: "परियोजनाएँ", events: "कार्यक्रम", admin: "एडमिन", about: "हमारे बारे में", donate: "हमें दान करें" },
-    actions: { login: "एडमिन लॉगिन", logout: "लॉगआउट", open: "खोलें", viewAll: "सभी देखें", create: "बनाएँ", update: "अपडेट" },
+    actions: { login: "एडमिन लॉगिन", logout: "लॉगआउट", open: "खोलें", viewAll: "सभी देखें", create: "बनाएँ", update: "अपडेट", uploadImage: "छवि अपलोड करें", save: "सहेजें", cancel: "रद्द करें", delete: "हटाएं", edit: "संपादित करें" },
     labels: {
       featuredProjects: "विशेष परियोजनाएँ",
       allProjects: "सभी परियोजनाएँ",
@@ -100,6 +105,11 @@ const dict = {
       language: "भाषा",
       cover: "कवर",
       translations: "अनुवाद",
+      contactUs: "हमसे संपर्क करें",
+      gallery: "गैलरी",
+      theme: "थीम",
+      adminPanel: "एडमिन पैनल",
+      dashboard: "डैशबोर्ड",
     },
     empty: {
       featured: "अभी कोई विशेष परियोजना नहीं है।",
@@ -171,7 +181,7 @@ const dict = {
     brand: "प्रयास यवतमाळ",
     tagline: " ",
     nav: { home: "मुख्य", projects: "प्रकल्प", events: "कार्यक्रम", admin: "अॅडमिन", about: "आमच्याबद्दल", donate: "आम्हाला देणगी द्या" },
-    actions: { login: "अॅडमिन लॉगिन", logout: "लॉगआउट", open: "उघडा", viewAll: "सर्व पहा", create: "तयार करा", update: "अपडेट" },
+    actions: { login: "अॅडमिन लॉगिन", logout: "लॉगआउट", open: "उघडा", viewAll: "सर्व पहा", create: "तयार करा", update: "अपडेट", uploadImage: "प्रतिमा अपलोड करा", save: "जतन करा", cancel: "रद्द करा", delete: "हटवा", edit: "संपादित करा" },
     labels: {
       featuredProjects: "वैशिष्ट्यपूर्ण प्रकल्प",
       allProjects: "सर्व प्रकल्प",
@@ -181,6 +191,11 @@ const dict = {
       language: "भाषा",
       cover: "कव्हर",
       translations: "भाषांतर",
+      contactUs: "आमच्याशी संपर्क साधा",
+      gallery: "गॅलरी",
+      theme: "थीम",
+      adminPanel: "अॅडमिन पॅनेल",
+      dashboard: "डॅशबोर्ड",
     },
     empty: {
       featured: "सध्या कोणतेही वैशिष्ट्यपूर्ण प्रकल्प नाहीत.",

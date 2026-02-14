@@ -109,9 +109,14 @@
   --shadow-color: 0 0% 0%;
 }
 
+* {
+  color-scheme: dark;
+}
+
 @layer base {
   html {
     color-scheme: light;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   .dark html {
     color-scheme: dark;
@@ -119,6 +124,7 @@
 
   * {
     @apply border-border;
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
   }
 
   body {
@@ -137,9 +143,9 @@
 @layer utilities {
   .bg-heritage {
     background:
-      radial-gradient(1200px 600px at 18% 12%, hsl(var(--tri-saffron) / 0.12), transparent 55%),
-      radial-gradient(1000px 520px at 78% 18%, hsl(var(--accent) / 0.10), transparent 52%),
-      radial-gradient(1000px 520px at 60% 92%, hsl(var(--tri-green) / 0.10), transparent 52%),
+      radial-gradient(1200px 600px at 18% 12%, hsl(var(--tri-saffron) / 0.08), transparent 55%),
+      radial-gradient(1000px 520px at 78% 18%, hsl(var(--tri-navy) / 0.08), transparent 52%),
+      radial-gradient(1000px 520px at 60% 92%, hsl(var(--tri-green) / 0.08), transparent 52%),
       linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
   }
 
@@ -178,6 +184,7 @@
       hsl(var(--tri-green)) 100%
     );
     opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(255, 153, 51, 0.3), 0 4px 12px rgba(19, 136, 8, 0.3);
   }
 
   .focus-premium {

@@ -5,26 +5,21 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0" +
-  " hover-elevate active-elevate-2",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 transition-all duration-300 overflow-hidden text-ellipsis",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground border border-primary-border",
+          "bg-transparent text-foreground border-2 border-[hsl(var(--tri-navy))] hover:border-[hsl(var(--tri-saffron))] hover:shadow-[0_0_20px_hsl(var(--tri-navy)/0.6),0_0_30px_hsl(var(--tri-saffron)/0.4)]",
         destructive:
-          "bg-destructive text-destructive-foreground border border-destructive-border",
+          "bg-transparent text-destructive border-2 border-destructive hover:shadow-[0_0_20px_hsl(var(--destructive)/0.6)]",
         outline:
-          // Shows the background color of whatever card / sidebar / accent background it is inside of.
-          // Inherits the current text color.
-          " border [border-color:var(--button-outline)]  shadow-xs active:shadow-none ",
-        secondary: "border bg-secondary text-secondary-foreground border border-secondary-border ",
-        // Add a transparent border so that when someone toggles a border on later, it doesn't shift layout/size.
-        ghost: "border border-transparent",
+          "bg-transparent border-2 border-[hsl(var(--tri-green))] hover:border-[hsl(var(--tri-saffron))] hover:shadow-[0_0_20px_hsl(var(--tri-green)/0.6),0_0_30px_hsl(var(--tri-saffron)/0.4)]",
+        secondary:
+          "bg-transparent border-2 border-muted-foreground/30 hover:border-muted-foreground/60 hover:shadow-[0_0_15px_hsl(var(--muted-foreground)/0.3)]",
+        ghost:
+          "border border-transparent hover:bg-muted/50",
       },
-      // Heights are set as "min" heights, because sometimes Ai will place large amount of content
-      // inside buttons. With a min-height they will look appropriate with small amounts of content,
-      // but will expand to fit large amounts of content.
       size: {
         default: "min-h-9 px-4 py-2",
         sm: "min-h-8 rounded-md px-3 text-xs",
